@@ -7,6 +7,7 @@ import {
   FileDown,
   Gauge,
   Gem,
+  Inbox,
   Layers,
   LogOut,
   Plus,
@@ -15,6 +16,9 @@ import {
   Settings,
   ShieldCheck,
   ShoppingBag,
+  Sparkles,
+  TrendingDown,
+  TrendingUp,
   Upload,
   X,
 } from 'lucide-react'
@@ -80,19 +84,22 @@ const expenseCategories: ExpenseCategory[] = [
   'Other',
 ]
 
-const panelClass = 'min-w-0 rounded-lg border border-[#dce4df] bg-white p-4 shadow-[0_10px_30px_rgba(22,34,28,0.06)]'
+const panelClass =
+  'min-w-0 rounded-xl border border-line-soft bg-white p-5 shadow-card transition duration-200 hover:shadow-pop'
 const tablePanelClass =
-  'min-w-0 overflow-hidden rounded-lg border border-[#dce4df] bg-white shadow-[0_10px_30px_rgba(22,34,28,0.06)]'
+  'min-w-0 overflow-hidden rounded-xl border border-line-soft bg-white shadow-card transition duration-200 hover:shadow-pop'
 const tableClass =
-  'w-full min-w-[980px] border-collapse text-sm [&_td]:border-b [&_td]:border-[#dce4df] [&_td]:px-3 [&_td]:py-3 [&_td]:align-middle [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:bg-[#17211d] [&_th]:px-3 [&_th]:py-3 [&_th]:text-left [&_th]:text-[0.72rem] [&_th]:font-extrabold [&_th]:uppercase [&_th]:text-[#edf4ef]'
-const tableRowClass = 'even:bg-[#fbfdfb] hover:bg-[#f0f6f2]'
-const labelClass = 'grid gap-1.5 text-xs font-extrabold text-[#34443c]'
+  'w-full min-w-[980px] border-collapse text-sm tabular [&_td]:border-b [&_td]:border-line-soft [&_td]:px-3 [&_td]:py-3 [&_td]:align-middle [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:bg-ink [&_th]:px-3 [&_th]:py-3 [&_th]:text-left [&_th]:text-[0.7rem] [&_th]:font-extrabold [&_th]:uppercase [&_th]:tracking-wider [&_th]:text-white/85 [&_th]:border-b [&_th]:border-white/10'
+const tableRowClass =
+  'relative even:bg-canvas-2/60 transition-colors duration-150 hover:bg-brand-soft/40 ' +
+  "before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-brand before:scale-y-0 before:origin-center before:transition-transform before:duration-200 hover:before:scale-y-100"
+const labelClass = 'grid gap-1.5 text-xs font-extrabold uppercase tracking-wider text-[#34443c]'
 const fieldClass =
-  'min-h-10 w-full rounded-lg border border-[#ccd8d1] bg-[#f8fbf9] px-2.5 py-2.5 text-[#17211d] outline-none focus:border-[#459b6b] focus:ring-4 focus:ring-[#127a45]/10'
+  'focus-ring min-h-10 w-full rounded-lg border border-[#ccd8d1] bg-canvas-2 px-2.5 py-2.5 text-ink outline-none transition-shadow duration-150 focus:border-brand'
 const primaryButtonClass =
-  'inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border-0 bg-[#127a45] px-4 font-extrabold text-white hover:bg-[#0d6538]'
+  'group inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border-0 bg-brand px-4 font-extrabold text-white shadow-card transition duration-150 hover:bg-brand-2 hover:-translate-y-px hover:shadow-pop active:translate-y-0 active:scale-[.98]'
 const ghostButtonClass =
-  'inline-flex min-h-10 items-center gap-2 rounded-lg border-0 bg-transparent px-3 py-2.5 text-left text-[#d8e3dc] hover:bg-[#223229] hover:text-white'
+  'inline-flex min-h-10 items-center gap-2 rounded-lg border-0 bg-transparent px-3 py-2.5 text-left text-[#d8e3dc] transition-colors duration-150 hover:bg-white/8 hover:text-white'
 
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(' ')
@@ -153,26 +160,48 @@ function App() {
   }
 
   if (authLoading) {
-    return <div className="flex min-h-screen items-center justify-center bg-[#111915] p-6 text-white">Loading your vendor workspace...</div>
+    return (
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-ink-3 p-6 text-white">
+        <div className="pointer-events-none absolute -left-24 -top-24 h-[480px] w-[480px] rounded-full bg-brand/25 blur-3xl animate-blob" aria-hidden="true" />
+        <div className="pointer-events-none absolute -bottom-24 -right-24 h-[420px] w-[420px] rounded-full bg-gold/20 blur-3xl animate-blob [animation-delay:-6s]" aria-hidden="true" />
+        <div className="relative flex flex-col items-center gap-3 animate-fade-in">
+          <div className="grid h-12 w-12 place-items-center rounded-xl bg-gold/15 ring-1 ring-gold/30">
+            <Layers className="h-6 w-6 text-gold" aria-hidden="true" />
+          </div>
+          <span className="h-5 w-5 rounded-full border-2 border-brand-soft/30 border-t-brand-soft animate-spin-slow" aria-hidden="true" />
+          <p className="text-sm text-white/70">Loading your vendor workspace…</p>
+        </div>
+      </div>
+    )
   }
 
   if (isSupabaseConfigured && !session) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#111915] p-6 text-white">
-        <section className="w-full max-w-[430px] rounded-lg border border-[#dce4df] bg-white p-7 text-[#17211d] shadow-[0_18px_60px_rgba(22,34,28,0.12)]">
+      <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-ink-3 p-6 text-white">
+        <div className="pointer-events-none absolute -left-32 -top-24 h-[560px] w-[560px] rounded-full bg-brand/30 blur-3xl animate-blob" aria-hidden="true" />
+        <div className="pointer-events-none absolute -bottom-32 -right-24 h-[520px] w-[520px] rounded-full bg-gold/25 blur-3xl animate-blob [animation-delay:-7s]" aria-hidden="true" />
+        <section
+          className="relative w-full max-w-[440px] overflow-hidden rounded-2xl border border-line-soft bg-white p-7 text-ink shadow-pop animate-slide-up
+            before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:bg-gradient-to-r before:from-brand before:via-gold before:to-brand"
+        >
           <div className="mb-6 flex items-center gap-3.5">
-            <ShieldCheck className="h-8 w-8 text-[#d8a236]" aria-hidden="true" />
+            <div className="grid h-12 w-12 place-items-center rounded-xl bg-gold-soft ring-1 ring-gold/30">
+              <ShieldCheck className="h-6 w-6 text-gold-2" aria-hidden="true" />
+            </div>
             <div>
-              <p className="mb-1 text-xs font-extrabold uppercase text-[#b17a16]">Private inventory</p>
-              <h1 className="text-3xl font-extrabold tracking-normal">Card Vendor Tracker</h1>
+              <p className="mb-1 text-xs font-extrabold uppercase tracking-wider text-gold-2">Private inventory</p>
+              <h1 className="font-display text-3xl font-bold tracking-tight">Card Vendor Tracker</h1>
             </div>
           </div>
           <form className="grid gap-3.5" onSubmit={handleAuth}>
             <Input name="email" label="Email" type="email" autoComplete="email" required />
             <Input name="password" label="Password" type="password" autoComplete="current-password" required />
-            {authError && <p className="m-0 rounded-lg bg-[#fde8e6] p-3 text-[#b6403a]">{authError}</p>}
-            <button className={primaryButtonClass} type="submit">
+            {authError && (
+              <p className="m-0 rounded-lg bg-danger-soft p-3 text-danger animate-fade-in-fast">{authError}</p>
+            )}
+            <button className={cx(primaryButtonClass, 'mt-1')} type="submit">
               Sign in
+              <Sparkles className="h-4 w-4 transition-transform duration-200 group-hover:rotate-12" aria-hidden="true" />
             </button>
           </form>
         </section>
@@ -181,12 +210,14 @@ function App() {
   }
 
   return (
-    <div className="grid min-h-screen grid-cols-[260px_minmax(0,1fr)] bg-[#eef2ef] text-[#17211d] max-[920px]:grid-cols-1">
-      <aside className="flex flex-col gap-6 bg-[#17211d] p-4 text-[#edf4ef] max-[920px]:sticky max-[920px]:top-0 max-[920px]:z-40 max-[920px]:gap-3.5">
+    <div className="grid min-h-screen grid-cols-[260px_minmax(0,1fr)] bg-canvas text-ink max-[920px]:grid-cols-1">
+      <aside className="app-sidebar flex flex-col gap-6 p-4 text-[#edf4ef] max-[920px]:sticky max-[920px]:top-0 max-[920px]:z-40 max-[920px]:gap-3.5">
         <div className="flex items-center gap-3 px-1.5">
-          <Layers className="h-8 w-8 text-[#d8a236]" aria-hidden="true" />
-          <div>
-            <strong className="block text-base">Card Vendor</strong>
+          <div className="grid h-9 w-9 place-items-center rounded-lg bg-gold/15 ring-1 ring-gold/30">
+            <Layers className="h-5 w-5 text-gold" aria-hidden="true" />
+          </div>
+          <div className="min-w-0">
+            <strong className="block font-display text-base tracking-tight">Card Vendor</strong>
             <span className="mt-0.5 block max-w-[180px] truncate text-xs text-[#aebbb4] max-[920px]:hidden">
               {store.mode === 'demo' ? 'Demo workspace' : session?.user.email}
             </span>
@@ -196,12 +227,14 @@ function App() {
         <nav className="grid gap-1 max-[920px]:grid-cols-4 max-[640px]:grid-cols-2">
           {sections.map((section) => {
             const Icon = section.icon
+            const isActive = activeSection === section.id
             return (
               <button
                 key={section.id}
                 className={cx(
-                  'flex min-h-10 items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-[#d8e3dc] hover:bg-[#223229] hover:text-white max-[920px]:justify-center',
-                  activeSection === section.id && 'bg-[#223229] text-white',
+                  'relative flex min-h-10 items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-[#d8e3dc] transition-colors duration-200 hover:bg-white/8 hover:text-white max-[920px]:justify-center',
+                  "before:absolute before:left-0 before:top-1/2 before:h-5 before:w-[3px] before:-translate-y-1/2 before:rounded-r-full before:bg-gold before:opacity-0 before:transition-opacity before:duration-200 max-[920px]:before:hidden",
+                  isActive && 'bg-white/8 text-white before:opacity-100',
                 )}
                 onClick={() => setActiveSection(section.id)}
                 type="button"
@@ -214,9 +247,23 @@ function App() {
         </nav>
 
         <div className="mt-auto flex flex-col gap-2.5 max-[920px]:hidden">
-          <div className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2.5 text-[#d6e0da]">
+          <div className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2.5 text-[#d6e0da] ring-1 ring-white/10">
             <Database className="h-[18px] w-[18px]" aria-hidden="true" />
-            {store.mode === 'demo' ? 'Local demo' : 'Supabase'}
+            <span className="flex-1 text-sm">{store.mode === 'demo' ? 'Local demo' : 'Supabase'}</span>
+            <span className="relative flex h-2 w-2" aria-hidden="true">
+              <span
+                className={cx(
+                  'absolute inline-flex h-full w-full rounded-full opacity-70 animate-pulse-soft',
+                  store.mode === 'demo' ? 'bg-gold' : 'bg-brand',
+                )}
+              />
+              <span
+                className={cx(
+                  'relative inline-flex h-2 w-2 rounded-full',
+                  store.mode === 'demo' ? 'bg-gold' : 'bg-brand',
+                )}
+              />
+            </span>
           </div>
           {supabase && (
             <button className={ghostButtonClass} type="button" onClick={() => void supabase?.auth.signOut()}>
@@ -229,9 +276,9 @@ function App() {
 
       <main className="grid min-w-0 content-start gap-[18px] p-6 max-[640px]:p-4">
         <header className="flex items-center justify-between gap-4 max-[920px]:flex-col max-[920px]:items-stretch">
-          <div>
-            <p className="mb-1 text-xs font-extrabold uppercase text-[#b17a16]">Pokemon & One Piece operations</p>
-            <h1 className="text-[clamp(1.55rem,2vw,2.1rem)] font-extrabold leading-[1.08] tracking-normal">
+          <div className="animate-fade-in">
+            <p className="mb-1 text-xs font-extrabold uppercase tracking-wider text-gold-2">Pokemon &amp; One Piece operations</p>
+            <h1 className="font-display text-[clamp(1.55rem,2vw,2.1rem)] font-bold leading-[1.08] tracking-tight">
               {sections.find((section) => section.id === activeSection)?.label}
             </h1>
           </div>
@@ -241,25 +288,36 @@ function App() {
           </div>
         </header>
 
-        {store.error && <div className="rounded-lg border border-[#f5c8c4] bg-[#fde8e6] p-3 text-[#b6403a]">{store.error}</div>}
-        {store.loading && <div className="rounded-lg border border-[#cddff5] bg-[#e9f2ff] p-3 text-[#255f9f]">Syncing Supabase data...</div>}
+        {store.error && (
+          <div className="rounded-lg border border-[#f5c8c4] bg-danger-soft p-3 text-danger animate-fade-in-fast">
+            {store.error}
+          </div>
+        )}
+        {store.loading && (
+          <div className="flex items-center gap-2.5 rounded-lg border border-[#cddff5] bg-info-soft p-3 text-info animate-fade-in-fast">
+            <span className="h-4 w-4 rounded-full border-2 border-info/30 border-t-info animate-spin-slow" aria-hidden="true" />
+            Syncing Supabase data…
+          </div>
+        )}
 
-        {activeSection === 'dashboard' && <Dashboard data={store.data} totals={totals} />}
-        {activeSection === 'inventory' && <InventorySection data={store.data} search={search} />}
-        {activeSection === 'purchases' && <PurchasesSection data={store.data} search={search} />}
-        {activeSection === 'sales' && <SalesSection data={store.data} search={search} />}
-        {activeSection === 'grading' && <GradingSection data={store.data} search={search} />}
-        {activeSection === 'expenses' && <ExpensesSection data={store.data} search={search} />}
-        {activeSection === 'import' && (
-          <ImportSection data={store.data} parseCsvText={store.parseCsvText} onImport={store.importCardLadder} />
-        )}
-        {activeSection === 'settings' && (
-          <SettingsSection
-            data={store.data}
-            onSavePreset={store.saveFeePreset}
-            onResetDemo={store.mode === 'demo' ? store.resetDemoData : undefined}
-          />
-        )}
+        <div key={activeSection} className="animate-slide-up">
+          {activeSection === 'dashboard' && <Dashboard data={store.data} totals={totals} />}
+          {activeSection === 'inventory' && <InventorySection data={store.data} search={search} />}
+          {activeSection === 'purchases' && <PurchasesSection data={store.data} search={search} />}
+          {activeSection === 'sales' && <SalesSection data={store.data} search={search} />}
+          {activeSection === 'grading' && <GradingSection data={store.data} search={search} />}
+          {activeSection === 'expenses' && <ExpensesSection data={store.data} search={search} />}
+          {activeSection === 'import' && (
+            <ImportSection data={store.data} parseCsvText={store.parseCsvText} onImport={store.importCardLadder} />
+          )}
+          {activeSection === 'settings' && (
+            <SettingsSection
+              data={store.data}
+              onSavePreset={store.saveFeePreset}
+              onResetDemo={store.mode === 'demo' ? store.resetDemoData : undefined}
+            />
+          )}
+        </div>
       </main>
 
       <FormDrawer title={drawerTitle(drawer)} open={drawer !== null} onClose={() => setDrawer(null)}>
@@ -311,10 +369,10 @@ function drawerTitle(drawer: Drawer) {
 
 function SearchBox({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   return (
-    <label className="flex min-w-[280px] items-center gap-2 rounded-lg border border-[#dce4df] bg-white px-2.5 text-[#66736d] max-[920px]:min-w-0 max-[920px]:w-full">
+    <label className="focus-ring flex min-w-[280px] items-center gap-2 rounded-lg border border-line bg-white px-2.5 text-muted shadow-card transition-shadow duration-150 focus-within:border-brand focus-within:shadow-pop max-[920px]:min-w-0 max-[920px]:w-full">
       <Search className="h-[18px] w-[18px]" aria-hidden="true" />
       <input
-        className="min-h-10 w-full border-0 bg-transparent p-0 outline-none"
+        className="min-h-10 w-full border-0 bg-transparent p-0 text-ink outline-none placeholder:text-muted/70"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder="Search tables"
@@ -336,7 +394,7 @@ function QuickAction({ section, onOpen }: { section: Section; onOpen: (drawer: D
 
   return (
     <button className={primaryButtonClass} type="button" onClick={() => onOpen(action)}>
-      <Plus className="h-[18px] w-[18px]" aria-hidden="true" />
+      <Plus className="h-[18px] w-[18px] transition-transform duration-200 group-hover:rotate-90" aria-hidden="true" />
       Add
     </button>
   )
@@ -349,76 +407,105 @@ function Dashboard({ data, totals }: { data: CardData; totals: ReturnType<typeof
   const maxMonthly = Math.max(...sales.map((entry) => entry.sales), 1)
   const maxMix = Math.max(...productMix.map((entry) => entry.value), 1)
 
+  const kpis: Array<{ label: string; value: string; tone?: 'neutral' | 'green' | 'gold' | 'red' }> = [
+    { label: 'Inventory Cost', value: currency(totals.inventoryCost) },
+    { label: 'Market Value', value: currency(totals.marketValue), tone: 'green' },
+    { label: 'Unrealized P/L', value: currency(totals.unrealizedProfit), tone: totals.unrealizedProfit >= 0 ? 'green' : 'red' },
+    { label: 'Realized Profit', value: currency(totals.realizedProfit), tone: totals.realizedProfit >= 0 ? 'green' : 'red' },
+    { label: 'Margin', value: percent(totals.margin) },
+    { label: 'ROI', value: percent(totals.roi) },
+    { label: 'Cash Invested', value: currency(totals.cashInvested) },
+    { label: 'Units On Hand', value: String(totals.unitsOnHand) },
+    { label: 'Stale Pricing', value: String(totals.stalePricing), tone: totals.stalePricing ? 'gold' : 'green' },
+  ]
+
   return (
     <section className="grid items-start gap-[18px] md:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
       <div className="col-span-full grid grid-cols-9 gap-3 max-[1180px]:grid-cols-3 max-[640px]:grid-cols-2">
-        <Kpi label="Inventory Cost" value={currency(totals.inventoryCost)} />
-        <Kpi label="Market Value" value={currency(totals.marketValue)} tone="green" />
-        <Kpi label="Unrealized P/L" value={currency(totals.unrealizedProfit)} tone={totals.unrealizedProfit >= 0 ? 'green' : 'red'} />
-        <Kpi label="Realized Profit" value={currency(totals.realizedProfit)} tone={totals.realizedProfit >= 0 ? 'green' : 'red'} />
-        <Kpi label="Margin" value={percent(totals.margin)} />
-        <Kpi label="ROI" value={percent(totals.roi)} />
-        <Kpi label="Cash Invested" value={currency(totals.cashInvested)} />
-        <Kpi label="Units On Hand" value={String(totals.unitsOnHand)} />
-        <Kpi label="Stale Pricing" value={String(totals.stalePricing)} tone={totals.stalePricing ? 'gold' : 'green'} />
+        {kpis.map((kpi, index) => (
+          <Kpi key={kpi.label} label={kpi.label} value={kpi.value} tone={kpi.tone} index={index} />
+        ))}
       </div>
 
       <div className={panelClass}>
         <PanelHeader icon={BarChart3} title="Monthly Sales & Profit" />
         <div className="grid gap-3">
-          {sales.length === 0 && <div className="p-5 text-center text-[#66736d]">No sales yet.</div>}
-          {sales.map((entry) => (
-            <div className="grid grid-cols-[72px_minmax(140px,1fr)_92px] items-center gap-2.5 max-[640px]:grid-cols-1" key={entry.month}>
-              <span className="block text-xs text-[#66736d]">{entry.month}</span>
-              <div className="relative h-[18px] overflow-hidden rounded-full bg-[#edf3ef]">
-                <div
-                  className="absolute left-1.5 top-[3px] h-2 rounded-full bg-[#d6a13b]"
-                  style={{ width: `${Math.max((entry.sales / maxMonthly) * 100, 4)}%` }}
-                />
-                <div
-                  className="absolute bottom-[3px] left-1.5 h-2 rounded-full bg-[#127a45]"
-                  style={{ width: `${Math.max((entry.profit / maxMonthly) * 100, 3)}%` }}
-                />
+          {sales.length === 0 && <EmptyState icon={BarChart3} title="No sales yet" hint="Log a sale to see your monthly trend." />}
+          {sales.map((entry, index) => {
+            const salesPct = Math.max((entry.sales / maxMonthly) * 100, 4)
+            const profitPct = Math.max((entry.profit / maxMonthly) * 100, 3)
+            return (
+              <div
+                className="grid grid-cols-[72px_minmax(140px,1fr)_92px] items-center gap-2.5 animate-fade-in max-[640px]:grid-cols-1"
+                key={entry.month}
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <span className="block text-xs font-medium text-muted">{entry.month}</span>
+                <div className="relative h-[18px] overflow-hidden rounded-full bg-line-soft">
+                  <div
+                    className="absolute left-1.5 top-[3px] h-2 origin-left rounded-full bg-gradient-to-r from-gold to-gold/80 animate-bar-grow"
+                    style={{ width: `${salesPct}%`, animationDelay: `${index * 50}ms` }}
+                  />
+                  <div
+                    className="absolute bottom-[3px] left-1.5 h-2 origin-left rounded-full bg-gradient-to-r from-brand to-brand/80 animate-bar-grow"
+                    style={{ width: `${profitPct}%`, animationDelay: `${index * 50 + 80}ms` }}
+                  />
+                </div>
+                <strong className="text-right tabular">{currency(entry.sales)}</strong>
               </div>
-              <strong>{currency(entry.sales)}</strong>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
 
       <div className={panelClass}>
         <PanelHeader icon={Boxes} title="Inventory Mix" />
         <div className="grid gap-3">
-          {productMix.map((entry) => (
-            <div className="grid gap-2" key={entry.label}>
-              <div className="flex items-baseline justify-between">
-                <strong>{entry.label}</strong>
-                <span className="block text-xs text-[#66736d]">{currency(entry.value)}</span>
+          {productMix.length === 0 && <EmptyState icon={Boxes} title="No inventory" hint="Add items to see the mix." />}
+          {productMix.map((entry, index) => {
+            const widthPct = Math.max((entry.value / maxMix) * 100, 5)
+            return (
+              <div
+                className="grid gap-2 animate-fade-in"
+                key={entry.label}
+                style={{ animationDelay: `${index * 60}ms` }}
+              >
+                <div className="flex items-baseline justify-between">
+                  <strong>{entry.label}</strong>
+                  <span className="block text-xs text-muted tabular">{currency(entry.value)}</span>
+                </div>
+                <div className="h-[18px] overflow-hidden rounded-full bg-line-soft">
+                  <div
+                    className="h-full origin-left rounded-full bg-gradient-to-r from-brand to-brand/80 animate-bar-grow"
+                    style={{ width: `${widthPct}%`, animationDelay: `${index * 60}ms` }}
+                  />
+                </div>
               </div>
-              <div className="h-[18px] overflow-hidden rounded-full bg-[#edf3ef]">
-                <div className="h-full rounded-full bg-[#127a45]" style={{ width: `${Math.max((entry.value / maxMix) * 100, 5)}%` }} />
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
 
       <div className={panelClass}>
         <PanelHeader icon={ShieldCheck} title="Data Checks" />
         <div className="grid gap-3">
-          {checks.map((check) => (
-            <div className="flex items-center justify-between rounded-lg border border-[#dce4df] bg-[#f7faf8] px-3 py-2.5" key={check.label}>
+          {checks.map((check, index) => (
+            <div
+              className="flex items-center justify-between rounded-lg border border-line-soft bg-canvas-2 px-3 py-2.5 transition-colors duration-150 hover:bg-canvas animate-fade-in"
+              key={check.label}
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
               <strong
                 className={cx(
-                  'text-lg',
-                  check.tone === 'good' && 'text-[#127a45]',
-                  check.tone === 'warn' && 'text-[#b17a16]',
-                  check.tone === 'bad' && 'text-[#b6403a]',
+                  'font-display text-lg tabular',
+                  check.tone === 'good' && 'text-brand',
+                  check.tone === 'warn' && 'text-gold-2',
+                  check.tone === 'bad' && 'text-danger',
                 )}
               >
                 {check.value}
               </strong>
-              <span>{check.label}</span>
+              <span className="text-sm text-ink/80">{check.label}</span>
             </div>
           ))}
         </div>
@@ -427,20 +514,57 @@ function Dashboard({ data, totals }: { data: CardData; totals: ReturnType<typeof
   )
 }
 
-function Kpi({ label, value, tone = 'neutral' }: { label: string; value: string; tone?: 'neutral' | 'green' | 'gold' | 'red' }) {
+function Kpi({
+  label,
+  value,
+  tone = 'neutral',
+  index = 0,
+}: {
+  label: string
+  value: string
+  tone?: 'neutral' | 'green' | 'gold' | 'red'
+  index?: number
+}) {
+  const toneGradient =
+    tone === 'green'
+      ? 'bg-gradient-to-br from-white to-brand-soft/40'
+      : tone === 'gold'
+        ? 'bg-gradient-to-br from-white to-gold-soft/50'
+        : tone === 'red'
+          ? 'bg-gradient-to-br from-white to-danger-soft/50'
+          : 'bg-white'
+  const TrendIcon = tone === 'green' ? TrendingUp : tone === 'red' ? TrendingDown : null
   return (
-    <div className="min-h-[86px] rounded-lg border border-[#dce4df] bg-white p-3.5 shadow-[0_10px_30px_rgba(22,34,28,0.06)]">
-      <span className="mb-2.5 block text-[0.73rem] font-extrabold uppercase text-[#66736d]">{label}</span>
-      <strong
-        className={cx(
-          'block break-words text-xl leading-none',
-          tone === 'green' && 'text-[#127a45]',
-          tone === 'gold' && 'text-[#b17a16]',
-          tone === 'red' && 'text-[#b6403a]',
+    <div
+      className={cx(
+        'min-h-[86px] rounded-xl border border-line-soft p-3.5 shadow-card transition duration-200 hover:-translate-y-0.5 hover:shadow-pop animate-slide-up',
+        toneGradient,
+      )}
+      style={{ animationDelay: `${index * 60}ms` }}
+    >
+      <span className="mb-2.5 block text-[0.7rem] font-extrabold uppercase tracking-wider text-muted">{label}</span>
+      <div className="flex items-center gap-1.5">
+        <strong
+          className={cx(
+            'block break-words font-display text-xl leading-none tabular',
+            tone === 'green' && 'text-brand',
+            tone === 'gold' && 'text-gold-2',
+            tone === 'red' && 'text-danger',
+          )}
+        >
+          {value}
+        </strong>
+        {TrendIcon && (
+          <TrendIcon
+            className={cx(
+              'h-3.5 w-3.5 shrink-0',
+              tone === 'green' && 'text-brand',
+              tone === 'red' && 'text-danger',
+            )}
+            aria-hidden="true"
+          />
         )}
-      >
-        {value}
-      </strong>
+      </div>
     </div>
   )
 }
@@ -448,18 +572,36 @@ function Kpi({ label, value, tone = 'neutral' }: { label: string; value: string;
 function PanelHeader({ icon: Icon, title }: { icon: IconComponent; title: string }) {
   return (
     <div className="mb-3.5 flex items-center gap-2">
-      <Icon className="h-[18px] w-[18px] text-[#b17a16]" aria-hidden="true" />
-      <h2 className="m-0 text-base font-extrabold tracking-normal">{title}</h2>
+      <div className="grid h-7 w-7 place-items-center rounded-md bg-gold-soft ring-1 ring-gold/30">
+        <Icon className="h-[14px] w-[14px] text-gold-2" aria-hidden="true" />
+      </div>
+      <h2 className="m-0 font-display text-base font-bold tracking-tight">{title}</h2>
     </div>
   )
 }
 
 function TableHeader({ icon, title }: { icon: IconComponent; title: string }) {
   return (
-    <div className="border-b border-[#dce4df] bg-[#f8fbf9] px-4 py-3">
+    <div className="border-b border-line-soft bg-canvas-2 px-4 py-3">
       <PanelHeader icon={icon} title={title} />
     </div>
   )
+}
+
+function EmptyState({ icon: Icon, title, hint }: { icon: IconComponent; title: string; hint?: string }) {
+  return (
+    <div className="grid place-items-center gap-2 rounded-lg border border-dashed border-line bg-canvas-2 px-4 py-10 text-center animate-fade-in">
+      <div className="grid h-10 w-10 place-items-center rounded-full bg-white ring-1 ring-line-soft">
+        <Icon className="h-5 w-5 text-muted" aria-hidden="true" />
+      </div>
+      <strong className="text-sm text-ink">{title}</strong>
+      {hint && <span className="text-xs text-muted">{hint}</span>}
+    </div>
+  )
+}
+
+function rowDelay(i: number) {
+  return { animationDelay: `${Math.min(i, 12) * 25}ms` }
 }
 
 function InventorySection({ data, search }: { data: CardData; search: string }) {
@@ -468,7 +610,7 @@ function InventorySection({ data, search }: { data: CardData; search: string }) 
   return (
     <section className={tablePanelClass}>
       <TableHeader icon={Boxes} title="Inventory Catalog" />
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto scrollbar-soft">
         <table className={tableClass}>
           <thead>
             <tr>
@@ -486,28 +628,35 @@ function InventorySection({ data, search }: { data: CardData; search: string }) 
             </tr>
           </thead>
           <tbody>
-            {rows.map((item) => {
+            {rows.length === 0 && (
+              <tr>
+                <td colSpan={11}>
+                  <EmptyState icon={Boxes} title="No inventory yet" hint="Use the Add button to track your first item." />
+                </td>
+              </tr>
+            )}
+            {rows.map((item, i) => {
               const onHand = quantityOnHand(item, data.sales)
               const cost = inventoryCostOnHand(item, data.sales, data.grading)
               const value = marketValueOnHand(item, data.sales)
               const unrealized = value - cost
               return (
-                <tr key={item.id} className={cx(tableRowClass, onHand <= 0 && 'opacity-60')}>
+                <tr key={item.id} className={cx(tableRowClass, 'animate-fade-in', onHand <= 0 && 'opacity-60')} style={rowDelay(i)}>
                   <td className="font-mono text-xs">{item.item_id}</td>
                   <td>{item.game}</td>
                   <td>
                     <strong>{item.name}</strong>
-                    <span className="block text-xs text-[#66736d]">{[item.year, item.set_name, item.card_number].filter(Boolean).join(' / ')}</span>
+                    <span className="block text-xs text-muted">{[item.year, item.set_name, item.card_number].filter(Boolean).join(' / ')}</span>
                   </td>
                   <td>{item.product_type}</td>
                   <td>{item.condition}</td>
-                  <td className={onHand <= 0 ? 'text-[#b17a16]' : ''}>{onHand}</td>
+                  <td className={onHand <= 0 ? 'text-gold-2' : ''}>{onHand}</td>
                   <td>{currency(landedUnitCost(item, data.grading))}</td>
-                  <td className={isMarketValueStale(item.market_value_date) ? 'text-[#b17a16]' : ''}>
+                  <td className={isMarketValueStale(item.market_value_date) ? 'text-gold-2' : ''}>
                     {currency(item.manual_market_value)}
                   </td>
                   <td>{currency(value)}</td>
-                  <td className={unrealized >= 0 ? 'text-[#127a45]' : 'text-[#b6403a]'}>{currency(unrealized)}</td>
+                  <td className={unrealized >= 0 ? 'text-brand' : 'text-danger'}>{currency(unrealized)}</td>
                   <td>
                     <StatusPill status={onHand <= 0 ? 'Sold Out' : item.status} />
                   </td>
@@ -527,7 +676,7 @@ function PurchasesSection({ data, search }: { data: CardData; search: string }) 
   return (
     <section className={tablePanelClass}>
       <TableHeader icon={ShoppingBag} title="Purchase Lots" />
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto scrollbar-soft">
         <table className={tableClass}>
           <thead>
             <tr>
@@ -543,8 +692,15 @@ function PurchasesSection({ data, search }: { data: CardData; search: string }) 
             </tr>
           </thead>
           <tbody>
-            {rows.map((purchase) => (
-              <tr key={purchase.id} className={tableRowClass}>
+            {rows.length === 0 && (
+              <tr>
+                <td colSpan={9}>
+                  <EmptyState icon={ShoppingBag} title="No purchases yet" hint="Log a purchase lot to track your spend." />
+                </td>
+              </tr>
+            )}
+            {rows.map((purchase, i) => (
+              <tr key={purchase.id} className={cx(tableRowClass, 'animate-fade-in')} style={rowDelay(i)}>
                 <td>{purchase.purchase_date}</td>
                 <td className="font-mono text-xs">{purchase.lot_id}</td>
                 <td>{purchase.seller}</td>
@@ -569,7 +725,7 @@ function SalesSection({ data, search }: { data: CardData; search: string }) {
   return (
     <section className={tablePanelClass}>
       <TableHeader icon={DollarSign} title="Sales Ledger" />
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto scrollbar-soft">
         <table className={tableClass}>
           <thead>
             <tr>
@@ -588,10 +744,17 @@ function SalesSection({ data, search }: { data: CardData; search: string }) {
             </tr>
           </thead>
           <tbody>
-            {rows.map((sale) => {
+            {rows.length === 0 && (
+              <tr>
+                <td colSpan={12}>
+                  <EmptyState icon={DollarSign} title="No sales yet" hint="Add a sale to see profit and margin." />
+                </td>
+              </tr>
+            )}
+            {rows.map((sale, i) => {
               const profit = saleProfit(sale, data.inventory, data.grading)
               return (
-                <tr key={sale.id} className={tableRowClass}>
+                <tr key={sale.id} className={cx(tableRowClass, 'animate-fade-in')} style={rowDelay(i)}>
                   <td>{sale.sale_date}</td>
                   <td>{sale.channel}</td>
                   <td className="font-mono text-xs">{sale.item_id}</td>
@@ -600,7 +763,7 @@ function SalesSection({ data, search }: { data: CardData; search: string }) {
                   <td>{currency(saleFees(sale))}</td>
                   <td>{currency(saleNetProceeds(sale))}</td>
                   <td>{currency(saleCogs(sale, data.inventory, data.grading))}</td>
-                  <td className={profit >= 0 ? 'text-[#127a45]' : 'text-[#b6403a]'}>{currency(profit)}</td>
+                  <td className={profit >= 0 ? 'text-brand' : 'text-danger'}>{currency(profit)}</td>
                   <td>{percent(saleMargin(sale, data.inventory, data.grading))}</td>
                   <td>{percent(saleRoi(sale, data.inventory, data.grading))}</td>
                   <td>
@@ -622,7 +785,7 @@ function GradingSection({ data, search }: { data: CardData; search: string }) {
   return (
     <section className={tablePanelClass}>
       <TableHeader icon={Gem} title="Grading Submissions" />
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto scrollbar-soft">
         <table className={tableClass}>
           <thead>
             <tr>
@@ -638,8 +801,15 @@ function GradingSection({ data, search }: { data: CardData; search: string }) {
             </tr>
           </thead>
           <tbody>
-            {rows.map((submission) => (
-              <tr key={submission.id} className={tableRowClass}>
+            {rows.length === 0 && (
+              <tr>
+                <td colSpan={9}>
+                  <EmptyState icon={Gem} title="No submissions" hint="Track grading once you ship a card to PSA/BGS." />
+                </td>
+              </tr>
+            )}
+            {rows.map((submission, i) => (
+              <tr key={submission.id} className={cx(tableRowClass, 'animate-fade-in')} style={rowDelay(i)}>
                 <td className="font-mono text-xs">{submission.submission_id}</td>
                 <td className="font-mono text-xs">{submission.item_id}</td>
                 <td>{submission.company}</td>
@@ -666,7 +836,7 @@ function ExpensesSection({ data, search }: { data: CardData; search: string }) {
   return (
     <section className={tablePanelClass}>
       <TableHeader icon={ReceiptText} title="Expense Log" />
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto scrollbar-soft">
         <table className={tableClass}>
           <thead>
             <tr>
@@ -679,14 +849,21 @@ function ExpensesSection({ data, search }: { data: CardData; search: string }) {
             </tr>
           </thead>
           <tbody>
-            {rows.map((expense) => (
-              <tr key={expense.id} className={tableRowClass}>
+            {rows.length === 0 && (
+              <tr>
+                <td colSpan={6}>
+                  <EmptyState icon={ReceiptText} title="No expenses logged" hint="Capture supplies, booth fees, and storage here." />
+                </td>
+              </tr>
+            )}
+            {rows.map((expense, i) => (
+              <tr key={expense.id} className={cx(tableRowClass, 'animate-fade-in')} style={rowDelay(i)}>
                 <td>{expense.expense_date}</td>
                 <td>{expense.category}</td>
                 <td>{expense.vendor}</td>
                 <td>{currency(expense.amount)}</td>
                 <td>{expense.payment_method}</td>
-                <td className="max-w-[280px] whitespace-normal text-[#66736d]">{expense.notes}</td>
+                <td className="max-w-[280px] whitespace-normal text-muted">{expense.notes}</td>
               </tr>
             ))}
           </tbody>
@@ -708,6 +885,7 @@ function ImportSection({
   const [preview, setPreview] = useState<CsvImportPreview | null>(null)
   const [fileName, setFileName] = useState('')
   const [imported, setImported] = useState(false)
+  const [dragActive, setDragActive] = useState(false)
   const existingCerts = new Set(data.inventory.map((item) => item.cert_number).filter(Boolean))
   const duplicateWarnings =
     preview?.inventory
@@ -726,24 +904,40 @@ function ImportSection({
     <section className="grid items-start gap-[18px] md:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
       <div className={panelClass}>
         <PanelHeader icon={FileDown} title="Card Ladder CSV" />
-        <label className="grid min-h-[170px] cursor-pointer place-items-center rounded-lg border border-dashed border-[#98aaa0] bg-[#f8fbf9] p-6 text-center text-[#66736d]">
-          <Upload className="mb-1 h-8 w-8 text-[#127a45]" aria-hidden="true" />
-          <strong>Select CSV</strong>
-          <span>Card Ladder export</span>
+        <label
+          className={cx(
+            'grid min-h-[170px] cursor-pointer place-items-center rounded-xl border border-dashed bg-canvas-2 p-6 text-center text-muted transition duration-200',
+            dragActive ? 'border-brand bg-brand-soft/40 scale-[1.01]' : 'border-[#98aaa0] hover:border-brand hover:bg-brand-soft/30',
+          )}
+          onDragOver={(event) => {
+            event.preventDefault()
+            setDragActive(true)
+          }}
+          onDragLeave={() => setDragActive(false)}
+          onDrop={(event) => {
+            event.preventDefault()
+            setDragActive(false)
+            void handleFile(event.dataTransfer.files?.[0])
+          }}
+        >
+          <Upload className={cx('mb-2 h-8 w-8 transition-transform duration-200', dragActive ? 'text-brand scale-110' : 'text-brand')} aria-hidden="true" />
+          <strong className="text-ink">Select or drop a CSV</strong>
+          <span className="text-xs">Card Ladder export</span>
+          {fileName && <span className="mt-2 text-xs font-mono text-muted">{fileName}</span>}
           <input className="sr-only" accept=".csv,text/csv" type="file" onChange={(event) => void handleFile(event.target.files?.[0])} />
         </label>
 
         {preview && (
           <div className="my-3.5 grid grid-cols-2 gap-2.5">
-            <Kpi label="Rows" value={String(preview.inventory.length)} />
-            <Kpi label="Cost" value={currency(preview.totals.cost)} />
-            <Kpi label="Market" value={currency(preview.totals.marketValue)} tone="green" />
-            <Kpi label="Unrealized" value={currency(preview.totals.unrealizedProfit)} tone="gold" />
+            <Kpi label="Rows" value={String(preview.inventory.length)} index={0} />
+            <Kpi label="Cost" value={currency(preview.totals.cost)} index={1} />
+            <Kpi label="Market" value={currency(preview.totals.marketValue)} tone="green" index={2} />
+            <Kpi label="Unrealized" value={currency(preview.totals.unrealizedProfit)} tone="gold" index={3} />
           </div>
         )}
 
         {[...(preview?.warnings ?? []), ...duplicateWarnings].map((warning) => (
-          <div className="mt-3 rounded-lg border border-[#eedba8] bg-[#fff4d7] p-3 text-[#8a5d11]" key={warning}>
+          <div className="mt-3 rounded-lg border border-[#eedba8] bg-gold-soft p-3 text-[#8a5d11] animate-fade-in-fast" key={warning}>
             {warning}
           </div>
         ))}
@@ -759,12 +953,17 @@ function ImportSection({
             Confirm Import
           </button>
         )}
-        {imported && <div className="mt-3 rounded-lg border border-[#c6e7d5] bg-[#e4f5ec] p-3 text-[#127a45]">Import completed.</div>}
+        {imported && (
+          <div className="mt-3 flex items-center gap-2 rounded-lg border border-[#c6e7d5] bg-brand-soft p-3 text-brand animate-fade-in-fast">
+            <Sparkles className="h-4 w-4" aria-hidden="true" />
+            Import completed.
+          </div>
+        )}
       </div>
 
       <div className={tablePanelClass}>
         <TableHeader icon={Boxes} title="Preview" />
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto scrollbar-soft">
           <table className={tableClass}>
             <thead>
               <tr>
@@ -778,8 +977,8 @@ function ImportSection({
               </tr>
             </thead>
             <tbody>
-              {preview?.inventory.map((item) => (
-                <tr key={item.item_id} className={tableRowClass}>
+              {preview?.inventory.map((item, i) => (
+                <tr key={item.item_id} className={cx(tableRowClass, 'animate-fade-in')} style={rowDelay(i)}>
                   <td className="font-mono text-xs">{item.item_id}</td>
                   <td>{item.name}</td>
                   <td>{item.set_name}</td>
@@ -792,7 +991,7 @@ function ImportSection({
               {!preview && (
                 <tr>
                   <td colSpan={7}>
-                    <div className="p-5 text-center text-[#66736d]">No file selected.</div>
+                    <EmptyState icon={Inbox} title="No file selected" hint="Choose a Card Ladder CSV to preview rows." />
                   </td>
                 </tr>
               )}
@@ -822,7 +1021,7 @@ function SettingsSection({
 
       <div className={tablePanelClass}>
         <TableHeader icon={Settings} title="Channels" />
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto scrollbar-soft">
           <table className={tableClass}>
             <thead>
               <tr>
@@ -833,19 +1032,23 @@ function SettingsSection({
               </tr>
             </thead>
             <tbody>
-              {data.feePresets.map((preset) => (
-                <tr key={preset.id} className={tableRowClass}>
+              {data.feePresets.map((preset, i) => (
+                <tr key={preset.id} className={cx(tableRowClass, 'animate-fade-in')} style={rowDelay(i)}>
                   <td>{preset.channel}</td>
                   <td>{percent(preset.fee_rate)}</td>
                   <td>{currency(preset.fee_flat)}</td>
-                  <td className="max-w-[280px] whitespace-normal text-[#66736d]">{preset.notes}</td>
+                  <td className="max-w-[280px] whitespace-normal text-muted">{preset.notes}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
         {onResetDemo && (
-          <button className="m-4 inline-flex min-h-10 items-center gap-2 rounded-lg px-3 py-2.5 text-[#17211d] hover:bg-[#f0f6f2]" type="button" onClick={onResetDemo}>
+          <button
+            className="m-4 inline-flex min-h-10 items-center gap-2 rounded-lg px-3 py-2.5 text-ink transition-colors duration-150 hover:bg-brand-soft/60"
+            type="button"
+            onClick={onResetDemo}
+          >
             Reset demo data
           </button>
         )}
@@ -855,14 +1058,53 @@ function SettingsSection({
 }
 
 function FormDrawer({ title, open, onClose, children }: { title: string; open: boolean; onClose: () => void; children: ReactNode }) {
-  if (!open) return null
+  const [rendered, setRendered] = useState(open)
+
+  useEffect(() => {
+    if (open) {
+      setRendered(true)
+      return
+    }
+    const timer = setTimeout(() => setRendered(false), 240)
+    return () => clearTimeout(timer)
+  }, [open])
+
+  useEffect(() => {
+    if (!open) return
+    function onKey(event: KeyboardEvent) {
+      if (event.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open, onClose])
+
+  if (!rendered) return null
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#0f1713]/30" role="presentation">
-      <aside className="ml-auto grid h-full w-[min(100vw,460px)] max-w-[460px] gap-4 overflow-y-auto border-l border-[#dce4df] bg-white p-5 shadow-[0_18px_60px_rgba(22,34,28,0.12)]" aria-label={title}>
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-extrabold">{title}</h2>
-          <button className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#eff3f1] text-[#17211d]" type="button" onClick={onClose} aria-label="Close drawer">
+    <div
+      className={cx(
+        'fixed inset-0 z-50 bg-ink-3/40 backdrop-blur-sm',
+        open ? 'animate-fade-in-fast' : 'animate-fade-out',
+      )}
+      role="presentation"
+      onClick={onClose}
+    >
+      <aside
+        className={cx(
+          'ml-auto grid h-full w-[min(100vw,460px)] max-w-[460px] gap-4 overflow-y-auto rounded-l-2xl border-l border-line-soft bg-white p-5 shadow-pop scrollbar-soft',
+          open ? 'animate-slide-in-right' : 'animate-slide-out-right',
+        )}
+        aria-label={title}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="flex items-center justify-between border-b border-line-soft pb-3">
+          <h2 className="font-display text-base font-bold tracking-tight">{title}</h2>
+          <button
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-canvas text-ink transition-colors duration-150 hover:bg-line"
+            type="button"
+            onClick={onClose}
+            aria-label="Close drawer"
+          >
             <X className="h-[18px] w-[18px]" aria-hidden="true" />
           </button>
         </div>
@@ -1147,13 +1389,16 @@ function StatusPill({ status }: { status: string }) {
   return (
     <span
       className={cx(
-        'inline-flex min-w-[72px] justify-center whitespace-nowrap rounded-full px-2 py-1 text-xs font-extrabold',
-        isGreen && 'bg-[#e4f5ec] text-[#127a45]',
-        isRed && 'bg-[#fde8e6] text-[#b6403a]',
-        isGold && 'bg-[#fff4d7] text-[#b17a16]',
-        !isGreen && !isRed && !isGold && 'bg-[#e9f2ff] text-[#255f9f]',
+        'inline-flex min-w-[72px] items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-extrabold ring-1',
+        isGreen && 'bg-brand-soft text-brand ring-brand/15',
+        isRed && 'bg-danger-soft text-danger ring-danger/15',
+        isGold && 'bg-gold-soft text-gold-2 ring-gold/20',
+        !isGreen && !isRed && !isGold && 'bg-info-soft text-info ring-info/15',
       )}
     >
+      {isGold && (
+        <span className="inline-block h-1.5 w-1.5 rounded-full bg-gold-2 animate-pulse-soft" aria-hidden="true" />
+      )}
       {status}
     </span>
   )
