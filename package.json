@@ -13,6 +13,8 @@
     "test:e2e": "playwright test",
     "seed:from-csv": "node scripts/create-private-seed.mjs",
     "seed:verify": "node scripts/verify-private-seed.mjs",
+    "db:seed": "node scripts/seed-supabase.mjs",
+    "db:verify": "node scripts/verify-supabase.mjs",
     "vercel-build": "npm run build"
   },
   "dependencies": {

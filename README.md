@@ -65,6 +65,13 @@ VITE_SUPABASE_PUBLISHABLE_KEY=...
 
 Do not use service-role keys in the frontend or commit `.env` files.
 
+After a Supabase project is linked and private credentials exist in `data/private/supabase-admin.env`, seed and verify the remote database with:
+
+```bash
+npm run db:seed
+npm run db:verify
+```
+
 ## Tests
 
 ```bash
