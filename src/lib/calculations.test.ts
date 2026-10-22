@@ -80,6 +80,12 @@ describe('vendor calculations', () => {
     expect(quantityOnHand(data.inventory[0], data.sales)).toBe(1)
   })
 
+  it('keeps drafts out of stock, revenue, and profit', () => {
+    const draft: CardData = { ...data, sales: [{ ...data.sales[0], status: 'Draft' }] }
+    expect(quantityOnHand(draft.inventory[0], draft.sales)).toBe(2)
+    expect(dashboardTotals(draft).realizedProfit).toBe(0)
+  })
+
   it('calculates sale fees, net proceeds, profit, margin, and ROI', () => {
     const sale = data.sales[0]
 
