@@ -30,3 +30,6 @@ test-results/
 *.sln
 *.sw?
 .vercel
+
+# Local browser verification artifacts
+.playwright-mcp/

@@ -46,4 +46,16 @@ describe('Card Ladder CSV import', () => {
     const preview = parseCardLadderCsv(duplicate, 'duplicate.csv')
     expect(preview.warnings).toContain('Duplicate cert in import preview: CERT001')
   })
+
+  it('flags invalid quantities instead of creating bad inventory', () => {
+    const invalid = fixture.replace('2026-05-01,1,', '2026-05-01,-2,')
+    const preview = parseCardLadderCsv(invalid)
+    expect(preview.inventory).toHaveLength(1)
+    expect(preview.warnings[0]).toContain('positive whole quantity')
+  })
+
+  it('keeps unrelated games out of the Pokemon category', () => {
+    const unrelated = fixture.replaceAll('Pokemon Sample Set', 'Alpha').replaceAll(',Pokemon,', ',Magic,')
+    expect(parseCardLadderCsv(unrelated).inventory[1].game).toBe('Other')
+  })
 })

@@ -56,12 +56,13 @@ function inferGame(setName: string, category: string): 'Pokemon' | 'One Piece' |
   const text = `${setName} ${category}`.toLowerCase()
   if (text.includes('one piece')) return 'One Piece'
   if (text.includes('pokemon')) return 'Pokemon'
-  return 'Pokemon'
+  return 'Other'
 }
 
 function inferProductType(condition: string): 'Raw Single' | 'Slab' | 'Sealed' | 'Bulk' | 'Accessory' {
   const normalized = condition.toLowerCase()
-  if (normalized.includes('psa') || normalized.includes('bgs') || normalized.includes('cgc')) return 'Slab'
+  if (/psa|bgs|cgc|sgc/.test(normalized)) return 'Slab'
+  if (normalized.includes('sealed')) return 'Sealed'
   return 'Raw Single'
 }
 
@@ -91,12 +92,20 @@ export function parseCardLadderCsv(csvText: string, fileName = 'card-ladder.csv'
   const certs = new Set<string>()
 
   result.data.forEach((row, index) => {
-    const quantity = Number.parseInt(clean(row.Quantity), 10) || 1
+    const quantity = Number(clean(row.Quantity))
     const investment = parseMoney(row.Investment)
     const marketValue = parseMoney(row['Current Value'])
     const cert = clean(row['Graded Cert #'])
     const datePurchased = clean(row['Date Purchased']) || new Date().toISOString().slice(0, 10)
     const card = clean(row.Card)
+    if (!card || !Number.isInteger(quantity) || quantity < 1 || investment < 0 || marketValue < 0) {
+      warnings.push(`Row ${index + 1}: add a card name, a positive whole quantity, and non-negative values.`)
+      return
+    }
+    if (Number.isNaN(Date.parse(datePurchased))) {
+      warnings.push(`Row ${index + 1}: use a valid purchase date.`)
+      return
+    }
     const setName = clean(row.Set)
     const number = clean(row.Number)
     const condition = clean(row.Condition)
@@ -137,7 +146,7 @@ export function parseCardLadderCsv(csvText: string, fileName = 'card-ladder.csv'
     purchases.push({
       id: `preview-purchase-${index + 1}`,
       lot_id: lotId,
-      purchase_date: datePurchased,
+      purchase_date: new Date(datePurchased).toISOString().slice(0, 10),
       seller: 'Card Ladder Import',
       source: fileName,
       total_paid: investment,

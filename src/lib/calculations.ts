@@ -1,6 +1,6 @@
 import type { CardData, GradingSubmission, InventoryItem, SaleRecord } from './types'
 
-const inactiveSaleStatuses = new Set(['Cancelled', 'Returned'])
+const inactiveSaleStatuses = new Set(['Draft', 'Cancelled', 'Returned'])
 
 export function currency(value: number): string {
   return new Intl.NumberFormat('en-US', {
